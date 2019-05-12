@@ -1,4 +1,4 @@
-package com.samarth.app.ws.controller;
+package com.samarth.app.ws.ui.controller;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
