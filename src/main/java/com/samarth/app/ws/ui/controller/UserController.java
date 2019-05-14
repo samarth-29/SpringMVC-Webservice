@@ -57,10 +57,21 @@ public class UserController {
 		return returnValue;
 	}
 	
-	@PutMapping
-	public String updateUser()
+	@PutMapping(path="/{id}",
+			consumes = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE },
+			produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE }
+			)
+	public UserRest updateUser(@RequestBody UserDetailsRequestModel userDetails,@PathVariable String id)
 	{
-		return "updated user";
+		UserRest returnValue = new UserRest();
+		
+		UserDto userDto = new UserDto();
+		BeanUtils.copyProperties(userDetails, userDto);
+		
+		UserDto updateduser = userService.updateUser(userDto,id);
+		BeanUtils.copyProperties(updateduser, returnValue);
+		
+		return returnValue;
 	}
 	
 	@DeleteMapping
