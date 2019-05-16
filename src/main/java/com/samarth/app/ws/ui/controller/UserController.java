@@ -1,9 +1,8 @@
 package com.samarth.app.ws.ui.controller;
 
-import org.springframework.http.MediaType;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +17,8 @@ import com.samarth.app.ws.service.UserService;
 import com.samarth.app.ws.shared.dto.UserDto;
 import com.samarth.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.samarth.app.ws.ui.model.response.ErrorMessages;
+import com.samarth.app.ws.ui.model.response.OperationStatusModel;
+import com.samarth.app.ws.ui.model.response.RequestOperationStatus;
 import com.samarth.app.ws.ui.model.response.UserRest;
 
 @RestController
@@ -74,9 +75,15 @@ public class UserController {
 		return returnValue;
 	}
 	
-	@DeleteMapping
-	public String deleteUser()
+	@DeleteMapping(path="/{id}",produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+	public OperationStatusModel deleteUser(@PathVariable String id)
 	{
-		return "deleted user";
+		OperationStatusModel returnValue = new OperationStatusModel();
+		returnValue.setOperationName(RequestOperationName.DELETE.name());
+		
+		userService.deleteUser(id);
+		
+		returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		return returnValue;
 	}
 }
