@@ -3,6 +3,7 @@ package com.samarth.app.ws.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import com.samarth.app.ws.io.entity.UserEntity;
 import com.samarth.app.ws.io.repository.UserRepository;
 import com.samarth.app.ws.service.UserService;
 import com.samarth.app.ws.shared.Utils;
+import com.samarth.app.ws.shared.dto.AddressDTO;
 import com.samarth.app.ws.shared.dto.UserDto;
 import com.samarth.app.ws.ui.model.response.ErrorMessages;
 
@@ -39,8 +41,19 @@ public class UserServiceImpl implements UserService {
 		
 		if(userRepository.findByEmail(user.getEmail()) != null) throw new RuntimeException("Record already exists");
 		
-		UserEntity userEntity = new UserEntity();
-		BeanUtils.copyProperties(user, userEntity);
+		
+		for(int i=0;i<user.getAddresses().size();i++)
+		{
+			AddressDTO address = user.getAddresses().get(i);
+			address.setUserDetails(user);
+			address.setAddressId(utils.generateAddressId(30));
+			user.getAddresses().set(i, address);
+		}
+		
+		//UserEntity userEntity = new UserEntity();
+		//BeanUtils.copyProperties(user, userEntity);
+		ModelMapper modelMapper = new ModelMapper();
+		UserEntity userEntity = modelMapper.map(user, UserEntity.class);
 		
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		
@@ -48,8 +61,11 @@ public class UserServiceImpl implements UserService {
 		userEntity.setUserId(publicUserId);
 		
 		UserEntity storedUserDetails = userRepository.save(userEntity);
-		UserDto returnValue = new UserDto();
-		BeanUtils.copyProperties(storedUserDetails, returnValue);
+		
+		
+		//UserDto returnValue = new UserDto();
+		//BeanUtils.copyProperties(storedUserDetails, returnValue);
+		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 		
 		return returnValue;
 	}
