@@ -1,9 +1,17 @@
 package com.samarth.app.ws.shared;
 
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
+
+import com.samarth.app.ws.security.SecurityConstants;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class Utils {
@@ -32,6 +40,34 @@ public class Utils {
 		}
 		
 		return new String(returnValue);
+	}
+
+	public static boolean hasTokenExpired(String token) {
+		boolean returnValue = false;
+
+		try {
+			Claims claims = Jwts.parser().setSigningKey(SecurityConstants.getTokenSecret()).parseClaimsJws(token)
+					.getBody();
+
+			Date tokenExpirationDate = claims.getExpiration();
+			Date todayDate = new Date();
+
+			returnValue = tokenExpirationDate.before(todayDate);
+		} catch (ExpiredJwtException ex) {
+			returnValue = true;
+		}
+
+		return returnValue;
+	}
+
+	public static String generateEmailVerificationToken(String publicUserId) {
+		 
+		String token = Jwts.builder()
+                .setSubject(publicUserId)
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
+                .compact();
+        return token;
 	}
 
 }
