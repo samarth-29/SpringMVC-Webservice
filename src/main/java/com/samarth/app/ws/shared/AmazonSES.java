@@ -10,6 +10,7 @@ import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.samarth.app.ws.shared.dto.UserDto;
 
  
@@ -60,8 +61,8 @@ public class AmazonSES {
 	public void verifyEmail(UserDto userDto) {
 
 		// You can also set your keys this way. And it will work!
-		System.setProperty("aws.accessKeyId", "<YOUR_AWS_KEY_ID>"); 
-		System.setProperty("aws.secretKey", "<YOUR_SECRET_KEY>"); 
+		System.setProperty("aws.accessKeyId", "AKIA36CIMSOW7DT7TK2P"); 
+		System.setProperty("aws.secretKey", "dS8AhxPcSKm6Sfro09HEcINO0HRkKe6d6Q6ly8oR"); 
 		
 		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.US_EAST_1)
 				.build();
@@ -79,5 +80,46 @@ public class AmazonSES {
 
 		client.sendEmail(request);
 		System.out.println("Email sent!");
+	}
+
+
+	public boolean sendPasswordResetRequest(String firstName, String email, String token) {
+		 
+		boolean returnValue = false;
+		
+		System.setProperty("aws.accessKeyId", "AKIA36CIMSOW7DT7TK2P"); 
+		System.setProperty("aws.secretKey", "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"); 
+		 
+	      AmazonSimpleEmailService client = 
+	          AmazonSimpleEmailServiceClientBuilder.standard()
+	            .withRegion(Regions.US_EAST_1).build();
+	      
+	      String htmlBodyWithToken = PASSWORD_RESET_HTMLBODY.replace("$tokenValue", token);
+	             htmlBodyWithToken = htmlBodyWithToken.replace("$firstName", firstName);
+	        
+	      String textBodyWithToken = PASSWORD_RESET_TEXTBODY.replace("$tokenValue", token);
+	             textBodyWithToken = textBodyWithToken.replace("$firstName", firstName);
+	      
+	      
+	      SendEmailRequest request = new SendEmailRequest()
+	          .withDestination(
+	              new Destination().withToAddresses( email ) )
+	          .withMessage(new Message()
+	              .withBody(new Body()
+	                  .withHtml(new Content()
+	                      .withCharset("UTF-8").withData(htmlBodyWithToken))
+	                  .withText(new Content()
+	                      .withCharset("UTF-8").withData(textBodyWithToken)))
+	              .withSubject(new Content()
+	                  .withCharset("UTF-8").withData(PASSWORD_RESET_SUBJECT)))
+	          .withSource(FROM);
+
+	      SendEmailResult result = client.sendEmail(request); 
+	      if(result != null && (result.getMessageId()!=null && !result.getMessageId().isEmpty()))
+	      {
+	          returnValue = true;
+	      }
+	      
+	      return returnValue;
 	}
 }
