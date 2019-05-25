@@ -60,7 +60,7 @@ public class Utils {
 		return returnValue;
 	}
 
-	public static String generateEmailVerificationToken(String publicUserId) {
+	public String generateEmailVerificationToken(String publicUserId) {
 		 
 		String token = Jwts.builder()
                 .setSubject(publicUserId)

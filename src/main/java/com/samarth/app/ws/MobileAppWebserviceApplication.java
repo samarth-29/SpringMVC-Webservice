@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.samarth.app.ws.security.AppProperties;
+import com.samarth.app.ws.shared.AmazonSES;
 
 @SpringBootApplication
 public class MobileAppWebserviceApplication extends SpringBootServletInitializer {
@@ -23,12 +24,16 @@ public class MobileAppWebserviceApplication extends SpringBootServletInitializer
 	}
 	
 	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder()
-	{
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean
+	public AmazonSES getAmazonSES() {
+		return new AmazonSES();
+	}
+ 
+	@Bean 
 	public SpringApplicationContext springApplicationContext()
 	{
 		return new SpringApplicationContext();

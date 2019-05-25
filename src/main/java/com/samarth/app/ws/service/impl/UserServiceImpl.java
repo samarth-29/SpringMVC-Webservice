@@ -48,9 +48,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto createUser(UserDto user) {
 		
-		if(userRepository.findByEmail(user.getEmail()) != null) throw new UserServiceException("Record already exists");
-		
-		
+		if (userRepository.findByEmail(user.getEmail()) != null)
+			throw new UserServiceException("Record already exists");
+
 		for(int i=0;i<user.getAddresses().size();i++)
 		{
 			AddressDTO address = user.getAddresses().get(i);
@@ -58,27 +58,24 @@ public class UserServiceImpl implements UserService {
 			address.setAddressId(utils.generateAddressId(30));
 			user.getAddresses().set(i, address);
 		}
-		
-		//UserEntity userEntity = new UserEntity();
+		  
 		//BeanUtils.copyProperties(user, userEntity);
 		ModelMapper modelMapper = new ModelMapper();
 		UserEntity userEntity = modelMapper.map(user, UserEntity.class);
-		
-		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		
+
 		String publicUserId = utils.generateUserId(30);
 		userEntity.setUserId(publicUserId);
-		
-		userEntity.setEmailVerificationToken(Utils.generateEmailVerificationToken(publicUserId));
-		userEntity.setEmailVerificationStatus(false);
+		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
+
 		UserEntity storedUserDetails = userRepository.save(userEntity);
-			
-		//UserDto returnValue = new UserDto();
+ 
 		//BeanUtils.copyProperties(storedUserDetails, returnValue);
-		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
+		UserDto returnValue  = modelMapper.map(storedUserDetails, UserDto.class);
 		
+        // Send an email message to user to verify their email address
 		amazonSES.verifyEmail(returnValue);
-		
+
 		return returnValue;
 	}
 

@@ -97,43 +97,54 @@ class UserServiceImplTest {
 		);
 	}
 	
-	/*
-	 * @Test final void testCreateUser_CreateUserServiceException() {
-	 * when(userRepository.findByEmail(anyString())).thenReturn(userEntity); UserDto
-	 * userDto = new UserDto(); userDto.setAddresses(getAddressesDto());
-	 * userDto.setFirstName("Sergey"); userDto.setLastName("Kargopolov");
-	 * userDto.setPassword("12345678"); userDto.setEmail("test@test.com");
-	 * 
-	 * assertThrows(UserServiceException.class,
-	 * 
-	 * () -> { userService.createUser(userDto); }
-	 * 
-	 * ); }
-	 * 
-	 * @Test final void testCreateUser() {
-	 * when(userRepository.findByEmail(anyString())).thenReturn(null);
-	 * when(utils.generateAddressId(anyInt())).thenReturn("hgfnghtyrir884");
-	 * when(utils.generateUserId(anyInt())).thenReturn(userId);
-	 * when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encryptedPassword)
-	 * ; when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
-	 * Mockito.doNothing().when(amazonSES).verifyEmail(any(UserDto.class));
-	 * 
-	 * UserDto userDto = new UserDto(); userDto.setAddresses(getAddressesDto());
-	 * userDto.setFirstName("Sergey"); userDto.setLastName("Kargopolov");
-	 * userDto.setPassword("12345678"); userDto.setEmail("test@test.com");
-	 * 
-	 * UserDto storedUserDetails = userService.createUser(userDto);
-	 * assertNotNull(storedUserDetails); assertEquals(userEntity.getFirstName(),
-	 * storedUserDetails.getFirstName()); assertEquals(userEntity.getLastName(),
-	 * storedUserDetails.getLastName());
-	 * assertNotNull(storedUserDetails.getUserId());
-	 * assertEquals(storedUserDetails.getAddresses().size(),
-	 * userEntity.getAddresses().size());
-	 * verify(utils,times(storedUserDetails.getAddresses().size())).
-	 * generateAddressId(30); verify(bCryptPasswordEncoder,
-	 * times(1)).encode("12345678");
-	 * verify(userRepository,times(1)).save(any(UserEntity.class)); }
-	 */
+	@Test
+	final void testCreateUser_CreateUserServiceException()
+	{
+		when(userRepository.findByEmail(anyString())).thenReturn(userEntity);
+		UserDto userDto = new UserDto();
+		userDto.setAddresses(getAddressesDto());
+		userDto.setFirstName("Sergey");
+		userDto.setLastName("Kargopolov");
+		userDto.setPassword("12345678");
+		userDto.setEmail("test@test.com");
+ 	
+		assertThrows(UserServiceException.class,
+
+				() -> {
+					userService.createUser(userDto);
+				}
+
+		);
+	}
+	
+	@Test
+	final void testCreateUser()
+	{
+		when(userRepository.findByEmail(anyString())).thenReturn(null);
+		when(utils.generateAddressId(anyInt())).thenReturn("hgfnghtyrir884");
+		when(utils.generateUserId(anyInt())).thenReturn(userId);
+		when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encryptedPassword);
+		when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+		Mockito.doNothing().when(amazonSES).verifyEmail(any(UserDto.class));
+ 		
+		UserDto userDto = new UserDto();
+		userDto.setAddresses(getAddressesDto());
+		userDto.setFirstName("Sergey");
+		userDto.setLastName("Kargopolov");
+		userDto.setPassword("12345678");
+		userDto.setEmail("test@test.com");
+
+		UserDto storedUserDetails = userService.createUser(userDto);
+		assertNotNull(storedUserDetails);
+		assertEquals(userEntity.getFirstName(), storedUserDetails.getFirstName());
+		assertEquals(userEntity.getLastName(), storedUserDetails.getLastName());
+		assertNotNull(storedUserDetails.getUserId());
+		assertEquals(storedUserDetails.getAddresses().size(), userEntity.getAddresses().size());
+		verify(utils,times(storedUserDetails.getAddresses().size())).generateAddressId(30);
+		verify(bCryptPasswordEncoder, times(1)).encode("12345678");
+		verify(userRepository,times(1)).save(any(UserEntity.class));
+	}
+	
 	private List<AddressDTO> getAddressesDto() {
 		AddressDTO addressDto = new AddressDTO();
 		addressDto.setType("shipping");
