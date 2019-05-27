@@ -1,5 +1,8 @@
 package com.samarth.app.ws.ui.controller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,12 +37,10 @@ import com.samarth.app.ws.ui.model.response.ErrorMessages;
 import com.samarth.app.ws.ui.model.response.OperationStatusModel;
 import com.samarth.app.ws.ui.model.response.RequestOperationStatus;
 import com.samarth.app.ws.ui.model.response.UserRest;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/users") // http://localhost:8080/users/
@@ -51,6 +55,11 @@ public class UserController {
 	@Autowired
 	AddressService addressesService;
 	
+	@ApiOperation(value="The Get User Details Web Service Endpoint",
+			notes="${userController.GetUser.ApiOperation.Notes}")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+	})
 	@GetMapping(path="/{id}",produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public UserRest getUser(@PathVariable String id)
 	{
@@ -114,6 +123,9 @@ public class UserController {
 		return returnValue;
 	}
 	
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType = "header")
+	})
 	@GetMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "limit", defaultValue = "25") int limit)
