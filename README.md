@@ -14,4 +14,10 @@
 
 ### Checkout REST end point testing with REST Assured
  - https://github.com/samarth-29/SpringMVC-webservice-REST-Assured-Testing.git
+
+
+### REST endpoints collection
+ - https://www.getpostman.com/collections/dd65bf44f5ed3c4b237e
+
+
  
